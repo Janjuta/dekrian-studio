@@ -322,6 +322,7 @@ body{font-family:'Poppins','Noto Sans Thai',sans-serif;background:#f0f4f8;margin
           <tbody id="tbodyHJudgeA_last20"></tbody>
         </table>
       </div>
+      <div id="judgeRemarkBox_tbodyHJudgeA_last20" class="mt-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-500 leading-relaxed"><span class="font-bold text-slate-600">Remark : </span><span id="judgeRemarkText_tbodyHJudgeA_last20"></span></div>
     </div>
 
     <div class="card p-4 mb-5">
@@ -355,6 +356,7 @@ body{font-family:'Poppins','Noto Sans Thai',sans-serif;background:#f0f4f8;margin
           <tbody id="tbodyHJudgeB_last20"></tbody>
         </table>
       </div>
+      <div id="judgeRemarkBox_tbodyHJudgeB_last20" class="mt-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-500 leading-relaxed"><span class="font-bold text-slate-600">Remark : </span><span id="judgeRemarkText_tbodyHJudgeB_last20"></span></div>
     </div>
 
     <div class="card p-4 mb-5">
@@ -684,6 +686,7 @@ body{font-family:'Poppins','Noto Sans Thai',sans-serif;background:#f0f4f8;margin
           <tbody id="tbodyEJudgeA_last20"></tbody>
         </table>
       </div>
+      <div id="judgeRemarkBox_tbodyEJudgeA_last20" class="mt-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-500 leading-relaxed"><span class="font-bold text-slate-600">Remark : </span><span id="judgeRemarkText_tbodyEJudgeA_last20"></span></div>
     </div>
 
     <div class="card p-4 mb-5">
@@ -717,6 +720,7 @@ body{font-family:'Poppins','Noto Sans Thai',sans-serif;background:#f0f4f8;margin
           <tbody id="tbodyEJudgeB_last20"></tbody>
         </table>
       </div>
+      <div id="judgeRemarkBox_tbodyEJudgeB_last20" class="mt-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-500 leading-relaxed"><span class="font-bold text-slate-600">Remark : </span><span id="judgeRemarkText_tbodyEJudgeB_last20"></span></div>
     </div>
 
     <div class="card p-4 mb-5">
@@ -1181,6 +1185,7 @@ function parseAll(files){
     const mFile=el('mFile');if(mFile)mFile.textContent=files.map(f=>f.name).join(', ');
     updateKPI();updatePressKPI();
     renderAll();
+    updateJudgeRemarks();
     setBusy(false);
     toast(`Loaded ${DATA.length.toLocaleString()} pieces`,'success');
   }catch(err){
@@ -1795,6 +1800,7 @@ const LANG = {
     ucl:'UCL:', lcl:'LCL:', typeA:'Type L', typeB:'Type R',
     noMachine:'ยังไม่ได้เลือกเครื่อง',
     yvalue:'Y-value',
+    judgeRemark:'ถ้าใน Pendant มีค่าเป็นลบ เช่น R = -180 และ system แนะนำให้ -0.5 หมายความว่า R = -180-0.5 = -180.5° หรือ system แนะนำให้ +0.5 หมายความว่า R = -180+0.5 = -179.5°',
     yAdjPad:'ปรับ Y ไม่ให้ถึง pad',
     yCheckBig:'ตรวจสอบชิ้นงานจริง ใหญ่จริงไหม? + ปรับ Y ไม่ให้ถึง pad',
     total:'รวม', yield_:'Yield %', ng_:'NG',
@@ -1829,6 +1835,7 @@ const LANG = {
     ucl:'UCL:', lcl:'LCL:', typeA:'Type L', typeB:'Type R',
     noMachine:'No machine selected',
     yvalue:'Y-value',
+    judgeRemark:'If the value in Pendant is negative, e.g. R = -180, and the system recommends -0.5, it means R = -180-0.5 = -180.5°. If the system recommends +0.5, it means R = -180+0.5 = -179.5°.',
     yAdjPad:'Adjust Y not to reach pad',
     yCheckBig:'Check actual part, is it actually big? + Adjust Y not to reach pad',
     total:'Total', yield_:'Yield %', ng_:'NG',
@@ -1863,6 +1870,7 @@ const LANG = {
     ucl:'UCL:', lcl:'LCL:', typeA:'タイプL', typeB:'タイプR',
     noMachine:'機械未選択',
     yvalue:'Y値',
+    judgeRemark:'Pendantの値がマイナスの場合（例：R = -180）、systemが-0.5を推奨する場合はR = -180-0.5 = -180.5°、+0.5を推奨する場合はR = -180+0.5 = -179.5°となります。',
     yAdjPad:'Yをパッドに届かないよう調整',
     yCheckBig:'実際の部品を確認、本当に大きい？ + Yをパッドに届かないよう調整',
     total:'合計', yield_:'歩留 %', ng_:'NG',
@@ -1925,6 +1933,15 @@ function setLang(lang){
     updateKPI();
     renderAll();
   }
+  updateJudgeRemarks();
+}
+function updateJudgeRemarks(){
+  const L=LANG[curLang]||LANG.th;
+  const remark = L.judgeRemark||'';
+  ['tbodyHJudgeA_last20','tbodyHJudgeB_last20','tbodyEJudgeA_last20','tbodyEJudgeB_last20'].forEach(id=>{
+    const el_r = document.getElementById('judgeRemarkText_'+id);
+    if(el_r) el_r.textContent = remark;
+  });
 }
 
 // ============================================================
@@ -2123,6 +2140,8 @@ svg{display:block;width:100%}`;
 <div class="phi">Machine: ${mc} (${typeLabel}) | Lot: ${lot}<br>Last 20 pcs | ${now}</div></div>
 <div class="sec">📊 Summary</div>${sum}
 <hr><div class="sec">🔍 Judge &amp; Adjustment</div>${judge}
+<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:7.5px;color:#475569;line-height:1.5">
+<strong style="color:#334155">Remark : </strong>${(LANG[curLang]||LANG.th).judgeRemark||''}</div>
 <hr><div class="sec">📈 Avg Profile</div>
 <div class="crow">${chartHTML}</div>
 </div>`;
